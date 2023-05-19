@@ -29,27 +29,35 @@ def quick_sort(num):
 def compare(a, b):
     if a > b:
         return 1
-    elif a < b:
-        return -1
-    else:
+    elif a == b:
         return 0
+    else:
+        return -1
 
-#生成指定的区间随机整数
+
+# 生成指定的区间随机整数
 def random_int(a, b):
+    """
+    :param a: 区间左端点
+    :param b: 区间右端点
+    :return: 返回一个随机整数
+    """
     return np.random.randint(a, b)
 
 
 def main():
-    num = 1
-    #num = [0, 5, 3]
+    # num = 1
+    # num = [0, 5, 3]
     # num = bubble_sort(num)
     # print(num)
-    #if len(num) > 3 and 1 > 0:
+    # if len(num) > 3 and 1 > 0:
     #    print("hello")
-    #num1 = random_int(3, 30)
-    #print(num1)
+    # num1 = random_int(3, 30)
+    # print(num1)
+    list_1 = [[1,2], 3]
+    
 
 main()
 
-#print("11")
-#print("22")
+# print("11")
+# print("22")
