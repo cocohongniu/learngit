@@ -54,8 +54,8 @@ def main():
     #    print("hello")
     # num1 = random_int(3, 30)
     # print(num1)
-    list_1 = [[1,2], 3]
-    
+    list_1 = [[1, 2], 3]
+
 
 main()
 
