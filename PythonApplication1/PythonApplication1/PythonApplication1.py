@@ -54,7 +54,15 @@ def main():
     #    print("hello")
     # num1 = random_int(3, 30)
     # print(num1)
-    list_1 = [[1, 2], 3]
+    slist_1 = [1,2, 3]
+    list_1 = [1,2, 3]
+    mliy_1 = [2,3,4]
+
+    print(list_1[0])
+    print(slist_1[0])
+    print(list_1[0])
+    print(list_1[0])
+    print(list_1[0])
 
 
 main()
