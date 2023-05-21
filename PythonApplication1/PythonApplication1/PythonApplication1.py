@@ -1,5 +1,7 @@
 from math import radians
 from tkinter import END
+import time
+from my import my_test as test
 
 import numpy as np  # installed with matplotlib
 import matplotlib.pyplot as plt
@@ -46,25 +48,9 @@ def random_int(a, b):
 
 
 def main():
-    # num = 1
-    # num = [0, 5, 3]
-    # num = bubble_sort(num)
-    # print(num)
-    # if len(num) > 3 and 1 > 0:
-    #    print("hello")
-    # num1 = random_int(3, 30)
-    # print(num1)
-    slist_1 = [1,2, 3]
-    list_1 = [1,2, 3]
-    mliy_1 = [2,3,4]
-
-    print(list_1[0])
-    print(slist_1[0])
-    print(list_1[0])
-    print(list_1[0])
-    print(list_1[0])
-
-
+    #my_test.test1()
+    test.test1()
+    #print("123")
 main()
 
 # print("11")
