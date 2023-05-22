@@ -2,6 +2,8 @@ from math import radians
 from tkinter import END
 import time
 from my import my_test as test
+import numpy
+from pyecharts.charts import Line
 
 import numpy as np  # installed with matplotlib
 import matplotlib.pyplot as plt
@@ -49,8 +51,12 @@ def random_int(a, b):
 
 def main():
     #my_test.test1()
-    test.test1()
-    #print("123")
+    #test.test1()
+
+    line = Line()
+    line.add_xaxis(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"])
+    line.add_yaxis("商家A", [random_int(0, 100) for _ in range(7)])
+    line.render()
 main()
 
 # print("11")
