@@ -1,68 +1,52 @@
 """
-演示可视化需求1：折线图开发
+演示全国疫情可视化地图开发
 """
 import json
-from pyecharts.charts import Line
-from pyecharts.options import TitleOpts, LabelOpts
+from pyecharts.charts import Map
+from pyecharts.options import *
+from pyecharts.faker import Faker
 
-# 处理数据
-f_us = open("D:/美国.txt", "r", encoding="UTF-8")
-us_data = f_us.read()   # 美国的全部内容
+# 读取数据文件
+f = open("D:/疫情.txt", "r", encoding="UTF-8")
+data = f.read()  # 全部数据
+# 关闭文件
+f.close()
+# 取到各省数据
+# 将字符串json转换为python的字典
+data_dict = json.loads(data)  # 基础数据字典
+# 从字典中取出省份的数据
+province_data_list = data_dict["areaTree"][0]["children"]
+# 组装每个省份和确诊人数为元组，并各个省的数据都封装入列表内
+data_list = []  # 绘图需要用的数据列表
+for province_data in province_data_list:
+    province_name = f"{province_data['name']}省"  # 省份名称
+    #province_name = province_data['name']  # 省份名称
+    province_confirm = province_data["total"]["confirm"]  # 确诊人数
+    data_list.append((province_name, province_confirm))
+    #print(province_name, province_confirm)
 
-f_jp = open("D:/日本.txt", "r", encoding="UTF-8")
-jp_data = f_jp.read()   # 日本的全部内容
 
-f_in = open("D:/印度.txt", "r", encoding="UTF-8")
-in_data = f_in.read()   # 印度的全部内容
-
-# 去掉不合JSON规范的开头
-us_data = us_data.replace("jsonp_1629344292311_69436(", "")
-jp_data = jp_data.replace("jsonp_1629350871167_29498(", "")
-in_data = in_data.replace("jsonp_1629350745930_63180(", "")
-
-# 去掉不合JSON规范的结尾
-us_data = us_data[:-2]
-jp_data = jp_data[:-2]
-in_data = in_data[:-2]
-
-# JSON转Python字典
-us_dict = json.loads(us_data)
-jp_dict = json.loads(jp_data)
-in_dict = json.loads(in_data)
-
-# 获取trend key
-us_trend_data = us_dict['data'][0]['trend']
-jp_trend_data = jp_dict['data'][0]['trend']
-in_trend_data = in_dict['data'][0]['trend']
-
-# 获取日期数据，用于x轴，取2020年（到314下标结束）
-us_x_data = us_trend_data['updateDate'][:314]
-jp_x_data = jp_trend_data['updateDate'][:314]
-in_x_data = in_trend_data['updateDate'][:314]
-
-# 获取确认数据，用于y轴，取2020年（到314下标结束）
-us_y_data = us_trend_data['list'][0]['data'][:314]
-jp_y_data = jp_trend_data['list'][0]['data'][:314]
-in_y_data = in_trend_data['list'][0]['data'][:314]
-
-# 生成图表
-line = Line()       # 构建折线图对象
-# 添加x轴数据
-line.add_xaxis(us_x_data)   # x轴是公用的，所以使用一个国家的数据即可
-# 添加y轴数据
-line.add_yaxis("美国确诊人数", us_y_data, label_opts=LabelOpts(is_show=False))     # 添加美国的y轴数据
-line.add_yaxis("日本确诊人数", jp_y_data, label_opts=LabelOpts(is_show=False))     # 添加日本的y轴数据
-line.add_yaxis("印度确诊人数", in_y_data, label_opts=LabelOpts(is_show=False))     # 添加印度的y轴数据
-
-# 设置全局选项
-line.set_global_opts(
-    # 标题设置
-    title_opts=TitleOpts(title="2020年美日印三国确诊人数对比折线图", pos_left="center", pos_bottom="1%")
+# 创建地图对象
+map = Map()
+# 添加数据
+map.add("各省份确诊人数", data_list, "china")
+#map.add("商家A", [list(z) for z in zip(Faker.provinces, Faker.values())], "china")
+# 设置全局配置，定制分段的视觉映射
+map.set_global_opts(
+    title_opts=TitleOpts(title="全国疫情地图"),
+    visualmap_opts=VisualMapOpts(
+        is_show=True,  # 是否显示
+        is_piecewise=True,  # 是否分段
+        #max_=200,  # 最大值
+        pieces=[
+            {"min": 1, "max": 99, "lable": "1~99人", "color": "#CCFFFF"},
+            {"min": 100, "max": 999, "lable": "100~9999人", "color": "#FFFF99"},
+            {"min": 1000, "max": 4999, "lable": "1000~4999人", "color": "#FF9966"},
+            {"min": 5000, "max": 9999, "lable": "5000~99999人", "color": "#FF6666"},
+            {"min": 10000, "max": 99999, "lable": "10000~99999人", "color": "#CC3333"},
+            {"min": 100000, "lable": "100000+", "color": "#990033"},
+        ],
+    ),
 )
-
-# 调用render方法，生成图表
-line.render()
-# 关闭文件对象
-f_us.close()
-f_jp.close()
-f_in.close()
+# 绘图
+map.render("全国疫情地图.html")
