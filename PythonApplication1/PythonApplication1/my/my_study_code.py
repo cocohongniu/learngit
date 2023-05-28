@@ -1,52 +1,72 @@
 """
-演示全国疫情可视化地图开发
+演示第三个图表：GDP动态柱状图开发
 """
-import json
-from pyecharts.charts import Map
+from pyecharts.charts import Bar, Timeline
 from pyecharts.options import *
-from pyecharts.faker import Faker
+from pyecharts.globals import ThemeType
 
-# 读取数据文件
-f = open("D:/疫情.txt", "r", encoding="UTF-8")
-data = f.read()  # 全部数据
+# 读取数据
+f = open("E:/1960-2019全球GDP数据.csv", "r", encoding="GB2312")
+data_lines = f.readlines()
 # 关闭文件
 f.close()
-# 取到各省数据
-# 将字符串json转换为python的字典
-data_dict = json.loads(data)  # 基础数据字典
-# 从字典中取出省份的数据
-province_data_list = data_dict["areaTree"][0]["children"]
-# 组装每个省份和确诊人数为元组，并各个省的数据都封装入列表内
-data_list = []  # 绘图需要用的数据列表
-for province_data in province_data_list:
-    province_name = f"{province_data['name']}省"  # 省份名称
-    #province_name = province_data['name']  # 省份名称
-    province_confirm = province_data["total"]["confirm"]  # 确诊人数
-    data_list.append((province_name, province_confirm))
-    #print(province_name, province_confirm)
+# 删除第一条数据
+data_lines.pop(0)
+# 将数据转换为字典存储，格式为：
+# { 年份: [ [国家, gdp], [国家,gdp], ......  ], 年份: [ [国家, gdp], [国家,gdp], ......  ], ...... }
+# { 1960: [ [美国, 123], [中国,321], ......  ], 1961: [ [美国, 123], [中国,321], ......  ], ...... }
+# 先定义一个字典对象
+data_dict = {}
+for line in data_lines:
+    year = int(line.split(",")[0])      # 年份
+    country = line.split(",")[1]        # 国家
+    gdp = float(line.split(",")[2])     # gdp数据
+    # 如何判断字典里面有没有指定的key呢？
+    try:
+        data_dict[year].append([country, gdp])
+    except KeyError:
+        data_dict[year] = []
+        data_dict[year].append([country, gdp])
+
+# print(data_dict[1960])
+# 创建时间线对象
+timeline = Timeline({"theme": ThemeType.LIGHT})
+# 排序年份
+sorted_year_list = sorted(data_dict.keys())
+for year in sorted_year_list:
+    data_dict[year].sort(key=lambda element: element[1], reverse=True)
+    # 取出本年份前8名的国家
+    year_data = data_dict[year][0:8]
+    x_data = []
+    y_data = []
+    for country_gdp in year_data:
+        x_data.append(country_gdp[0])   # x轴添加国家
+        y_data.append(country_gdp[1] // 100000000)   # y轴添加gdp数据
+
+    # 构建柱状图
+    bar = Bar()
+    x_data.reverse()
+    y_data.reverse()
+    bar.add_xaxis(x_data)
+    bar.add_yaxis("GDP(亿)", y_data, label_opts=LabelOpts(position="right"))
+    # 反转x轴和y轴
+    bar.reversal_axis()
+    # 设置每一年的图表的标题
+    bar.set_global_opts(
+        title_opts=TitleOpts(title=f"{year}年全球前8GDP数据")
+    )
+    timeline.add(bar, str(year))
 
 
-# 创建地图对象
-map = Map()
-# 添加数据
-map.add("各省份确诊人数", data_list, "china")
-#map.add("商家A", [list(z) for z in zip(Faker.provinces, Faker.values())], "china")
-# 设置全局配置，定制分段的视觉映射
-map.set_global_opts(
-    title_opts=TitleOpts(title="全国疫情地图"),
-    visualmap_opts=VisualMapOpts(
-        is_show=True,  # 是否显示
-        is_piecewise=True,  # 是否分段
-        #max_=200,  # 最大值
-        pieces=[
-            {"min": 1, "max": 99, "lable": "1~99人", "color": "#CCFFFF"},
-            {"min": 100, "max": 999, "lable": "100~9999人", "color": "#FFFF99"},
-            {"min": 1000, "max": 4999, "lable": "1000~4999人", "color": "#FF9966"},
-            {"min": 5000, "max": 9999, "lable": "5000~99999人", "color": "#FF6666"},
-            {"min": 10000, "max": 99999, "lable": "10000~99999人", "color": "#CC3333"},
-            {"min": 100000, "lable": "100000+", "color": "#990033"},
-        ],
-    ),
+# for循环每一年的数据，基于每一年的数据，创建每一年的bar对象
+# 在for中，将每一年的bar对象添加到时间线中
+
+# 设置时间线自动播放
+timeline.add_schema(
+    play_interval=500,
+    is_timeline_show=True,
+    is_auto_play=True,
+    is_loop_play=False
 )
 # 绘图
-map.render("全国疫情地图.html")
+timeline.render("1960-2019全球GDP前8国家.html")
