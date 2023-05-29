@@ -1,6 +1,7 @@
 """
 演示第三个图表：GDP动态柱状图开发
 """
+from random import random
 from pyecharts.charts import Bar, Timeline
 from pyecharts.options import *
 from pyecharts.globals import ThemeType
@@ -30,7 +31,7 @@ for line in data_lines:
 
 # print(data_dict[1960])
 # 创建时间线对象
-timeline = Timeline({"theme": ThemeType.LIGHT})
+timeline = Timeline(init_opts = {"theme": ThemeType.LIGHT, "is_horizontal_center" : True})
 # 排序年份
 sorted_year_list = sorted(data_dict.keys())
 for year in sorted_year_list:
