@@ -1,15 +1,15 @@
 """
-演示获取PySpark的执行环境入库对象：SparkContext
-并通过SparkContext对象获取当前PySpark的版本
+演示RDD的flatMap成员方法的使用
 """
-
-# 导包
 from pyspark import SparkConf, SparkContext
-# 创建SparkConf类对象
-conf = SparkConf().setMaster("local[*]").setAppName("test_spark_app")
-# 基于SparkConf类对象创建SparkContext对象
+import os
+os.environ['PYSPARK_PYTHON'] = "C:\\Users\\MyPC\\AppData\\Local\\Programs\\Python\\Python310\\python.exe"
+conf = SparkConf().setMaster("local[*]").setAppName("test_spark")
 sc = SparkContext(conf=conf)
-# 打印PySpark的运行版本
-print(sc.version)
-# 停止SparkContext对象的运行（停止PySpark程序）
-sc.stop()
+
+# 准备一个RDD
+rdd = sc.parallelize(["itheima itcast 666", "itheima itheima itcast", "python itheima"])
+
+# 需求，将RDD数据里面的一个个单词提取出来
+rdd2 = rdd.flatMap(lambda x: x.split(" "))
+print(rdd2.collect())

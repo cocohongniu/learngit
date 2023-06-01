@@ -7,7 +7,8 @@ from pyecharts.charts import Line
 
 import numpy as np  # installed with matplotlib
 import matplotlib.pyplot as plt
-
+import os
+os.environ['PYSPARK_PYTHON'] = "C:\\Users\\MyPC\\AppData\\Local\\Programs\\Python\\Python310\\python.exe"
 
 # 冒泡排序
 def bubble_sort(num):
